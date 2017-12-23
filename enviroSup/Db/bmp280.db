@@ -1,0 +1,16 @@
+record(ai, "$(P)$(R)Temperature") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) Temperature(F)")
+    field(SCAN, "1 second")
+    field(PHAS, "0")
+    field(EGU,  "F")
+}
+
+record(ai, "$(P)$(R)Pressure") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) Pressure(inHg)")
+    field(SCAN, "1 second")
+    field(PHAS, "1")
+    field(EGU,  "inHg")
+}
+

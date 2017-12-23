@@ -23,14 +23,14 @@
 # the CONFIG_SITE file.
 
 # Variables and paths to dependent modules:
-#MODULES = /path/to/modules
-#MYMODULE = $(MODULES)/my-module
+MODULES = /usr/local/epics/modules
+ASYN = $(MODULES)/asyn
 
 # If using the sequencer, point SNCSEQ at its top directory:
 #SNCSEQ = $(MODULES)/seq-ver
 
 # EPICS_BASE should appear last so earlier modules can override stuff:
-EPICS_BASE = /home/tfors/src/aps/epics/base
+EPICS_BASE = /usr/local/epics/base
 
 # Set RULES here if you want to use build rules from somewhere
 # other than EPICS_BASE:

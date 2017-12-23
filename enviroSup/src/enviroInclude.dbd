@@ -1,0 +1,2 @@
+registrar("drvAsynTCS3472Register")
+registrar("drvAsynBMP280Register")

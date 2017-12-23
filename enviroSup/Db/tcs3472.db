@@ -1,0 +1,30 @@
+record(mbbo, "$(P)$(R)Gain") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT)) Gain")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "x1 gain")
+    field(ONST, "x4 gain")
+    field(TWST, "x16 gain")
+    field(THST, "x60 gain")
+    field(NOBT, "2")
+    field(MASK, "0x03")
+    field(VAL,  "0")
+    field(PINI, "YES")
+}
+
+record(ai, "$(P)$(R)Light") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) Light")
+    field(SCAN, "1 second")
+}
+
+record(waveform, "$(P)$(R)Color") {
+    field(DTYP, "asynFloat64ArrayIn")
+    field(INP,  "@asyn($(PORT)) Color")
+    field(FTVL, "DOUBLE")
+    field(NELM, "3")
+    field(SCAN, "1 second")
+}

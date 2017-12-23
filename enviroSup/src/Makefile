@@ -16,7 +16,9 @@ LIBRARY_IOC += enviro
 DBD += enviro.dbd
 
 # specify all source files to be compiled and added to the library
-#enviro_SRCS += xxx
+enviro_SRCS += drvAsynI2C.cpp
+enviro_SRCS += drvAsynTCS3472.cpp
+enviro_SRCS += drvAsynBMP280.cpp
 
 enviro_LIBS += $(EPICS_BASE_IOC_LIBS)
 
