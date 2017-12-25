@@ -8,30 +8,41 @@
  */
 
 #include <epicsExport.h>
+#include <epicsThread.h>
 #include <iocsh.h>
 
 #include "drvAsynBMP280.h"
 
-// static const char *driverName = "drvAsynBMP280";
+static const char* driverName = "drvAsynBMP280";
+
+static void pollTask(void* drvPvt);
 
 drvAsynBMP280::drvAsynBMP280(const char* portName, int i2cPortNum, int i2cAddr)
     : drvAsynI2C(portName, i2cPortNum, i2cAddr,
 		 1, /* maxAddr */
                     /* Interface mask */
-                 asynInt32Mask | asynFloat64Mask | asynFloat64ArrayMask
-                     | asynDrvUserMask,
-                 0, /* Interrupt mask */
+                 (asynFloat64Mask | asynDrvUserMask),
+                    /* Interrupt mask */
+                 (asynFloat64Mask),
                  0, /* asynFlags (does not block and is not multi-device) */
                  1, /* Autoconnect */
                  0, /* Default priority */
                  0) /* Default stack size */
 {
-    createParam(P_TempString, asynParamFloat64, &P_Temperature);
+    const char* functionName = "drvAsynBMP280";
+
     createParam(P_TempCString, asynParamFloat64, &P_Temperature_C);
     createParam(P_TempFString, asynParamFloat64, &P_Temperature_F);
-    createParam(P_PressString, asynParamFloat64, &P_Pressure);
     createParam(P_PressPaString, asynParamFloat64, &P_Pressure_Pa);
     createParam(P_PressinHgString, asynParamFloat64, &P_Pressure_inHg);
+
+    eventId_ = epicsEventCreate(epicsEventEmpty);
+    if (epicsThreadCreate("drvAsynBMP280Task", epicsThreadPriorityMedium,
+                          epicsThreadGetStackSize(epicsThreadStackMedium),
+                          (EPICSTHREADFUNC)::pollTask, this) == NULL) {
+        printf("%s:%s: epicsThreadCreate failure\n", driverName, functionName);
+        return;
+    }
 
     // Call our connect method to work-around the fact that autoconnect flag
     // triggers the base class to call connect before our constructor runs.
@@ -148,68 +159,66 @@ int drvAsynBMP280::write_reg(unsigned char reg, unsigned char value)
     return this->i2c_wr_rd(tx, 2, tx, 2);
 }
 
-asynStatus drvAsynBMP280::readFloat64(asynUser* pasynUser, epicsFloat64* value)
+static void pollTask(void* drvPvt)
 {
-    int function = pasynUser->reason;
-    unsigned char vals[4];
+    drvAsynBMP280* pPvt = (drvAsynBMP280*)drvPvt;
+    pPvt->pollTask();
+}
+
+void drvAsynBMP280::pollTask(void)
+{
+    epicsTimeStamp now;
+    epicsUInt32 delay_ns;
+    int oneHz = 0;
+    unsigned char vals[6];
     int raw, v1, v2, v3;
+    int tfine;
+    double value;
 
-    // Check if we're still connected
-    if (this->fd < 0) {
-        pasynManager->exceptionDisconnect(pasynUser);
-        return asynDisconnected;
-    }
+    lock();
+    while (1) {
+        unlock();
 
-    if (function == P_Temperature || function == P_Temperature_C
-        || function == P_Temperature_F) {
+        epicsTimeGetCurrent(&now);
+        delay_ns = 50000000 - (now.nsec % 50000000); /* 20 Hz */
+        epicsEventWaitWithTimeout(eventId_, delay_ns / 1.e9);
+        oneHz = (now.nsec >= 750000000) && (now.nsec < 800000000);
 
-        /* Read device */
-        if (this->read_reg(0xfa, vals, 3) != 0) {
-            return asynError;
-        }
+        lock();
 
-        /* Apply calibration */
-        raw         = (vals[0] << 12) | (vals[1] << 4) | (vals[2] >> 4);
-        v1          = (raw / 16364.0 - this->t1 / 1024.0) * this->t2;
-        v2          = (raw / 131072.0 - this->t1 / 8192.0);
-        v2          = v2 * v2 * this->t3;
-        this->tfine = v1 + v2;
-        *value      = this->tfine / 5120.0;
+        if (oneHz) {
+            if (this->read_reg(0xf7, vals, 6) == 0) {
+                /* Apply temperature calibration */
+                raw   = (vals[3] << 12) | (vals[4] << 4) | (vals[5] >> 4);
+                v1    = (raw / 16364.0 - this->t1 / 1024.0) * this->t2;
+                v2    = (raw / 131072.0 - this->t1 / 8192.0);
+                v2    = v2 * v2 * this->t3;
+                tfine = v1 + v2;
+                value = tfine / 5120.0;
+                setDoubleParam(P_Temperature_C, value);
+                setDoubleParam(P_Temperature_F, value * 9 / 5 + 32);
 
-        /* Apply conversion */
-        if (function == P_Temperature_F) {
-            *value = *value * 9 / 5 + 32;
-        }
+                /* Apply pressure calibration */
+                raw = (vals[0] << 12) | (vals[1] << 4) | (vals[2] >> 4);
+                v1  = tfine / 2.0 - 64000.0;
+                v2  = v1 * v1 * this->p6 / 32768.0;
+                v2  = v2 + v1 * this->p5 * 2.0;
+                v2  = v2 / 4.0 + this->p4 * 65535.0;
+                v1 = (this->p3 * v1 * v1 / 524288.0 + this->p2 * v1) / 524288.0;
+                v1 = (1.0 + v1 / 32768.0) * this->p1;
+                v3 = 1048576.0 - raw;
+                v3 = (v3 - v2 / 4096.0) * 6250.0 / v1;
+                v1 = this->p9 * v3 * v3 / 2147483648.0;
+                v2 = v3 * this->p8 / 32768.0;
+                value = v3 + (v1 + v2 + this->p7) / 16.0;
+                setDoubleParam(P_Pressure_Pa, value);
+                setDoubleParam(P_Pressure_inHg, value * 0.00029530);
+            }
 
-    } else if (function == P_Pressure || function == P_Pressure_Pa
-               || function == P_Pressure_inHg) {
-
-        /* Read device */
-        if (this->read_reg(0xf7, vals, 3) != 0) {
-            return asynError;
-        }
-
-        /* Apply calibration */
-        raw    = (vals[0] << 12) | (vals[1] << 4) | (vals[2] >> 4);
-        v1     = this->tfine / 2.0 - 64000.0;
-        v2     = v1 * v1 * this->p6 / 32768.0;
-        v2     = v2 + v1 * this->p5 * 2.0;
-        v2     = v2 / 4.0 + this->p4 * 65535.0;
-        v1     = (this->p3 * v1 * v1 / 524288.0 + this->p2 * v1) / 524288.0;
-        v1     = (1.0 + v1 / 32768.0) * this->p1;
-        v3     = 1048576.0 - raw;
-        v3     = (v3 - v2 / 4096.0) * 6250.0 / v1;
-        v1     = this->p9 * v3 * v3 / 2147483648.0;
-        v2     = v3 * this->p8 / 32768.0;
-        *value = v3 + (v1 + v2 + this->p7) / 16.0;
-
-        /* Apply conversion */
-        if (function == P_Pressure_inHg) {
-            *value = *value * 0.00029530;
+            updateTimeStamp();
+            callParamCallbacks();
         }
     }
-
-    return asynSuccess;
 }
 
 extern "C" {

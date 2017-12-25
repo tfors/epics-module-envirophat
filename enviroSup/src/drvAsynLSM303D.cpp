@@ -8,6 +8,7 @@
  */
 
 #include <epicsExport.h>
+#include <epicsThread.h>
 #include <epicsTime.h>
 #include <iocsh.h>
 
@@ -15,7 +16,7 @@
 
 static const char* driverName = "drvAsynLSM303D";
 
-void pollTask(void *drvPvt);
+static void pollTask(void *drvPvt);
 
 drvAsynLSM303D::drvAsynLSM303D(const char* portName, int i2cPortNum,
                                int i2cAddr)
@@ -122,7 +123,7 @@ asynStatus drvAsynLSM303D::disconnect(asynUser* pasynUser)
     return this->i2c_disconnect(pasynUser);
 }
 
-void pollTask(void* drvPvt)
+static void pollTask(void* drvPvt)
 {
     drvAsynLSM303D* pPvt = (drvAsynLSM303D*)drvPvt;
     pPvt->pollTask();

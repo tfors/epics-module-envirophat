@@ -8,7 +8,6 @@
  */
 
 #include <epicsEvent.h>
-#include <epicsThread.h>
 
 #include "drvAsynI2C.h"
 
