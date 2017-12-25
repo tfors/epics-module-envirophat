@@ -1,0 +1,69 @@
+record(waveform, "$(P)$(R)Acceleration") {
+    field(DTYP, "asynFloat64ArrayIn")
+    field(INP,  "@asyn($(PORT)) Accel")
+    field(FTVL, "DOUBLE")
+    field(NELM, "3")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)AccelerationX") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) AccelX")
+    field(MDEL, "0.01")
+    field(PREC, "4")
+    field(EGU,  "g")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)AccelerationY") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) AccelY")
+    field(MDEL, "0.01")
+    field(PREC, "4")
+    field(EGU,  "g")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)AccelerationZ") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) AccelZ")
+    field(MDEL, "0.01")
+    field(PREC, "4")
+    field(EGU,  "g")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)MagField") {
+    field(DTYP, "asynFloat64ArrayIn")
+    field(INP,  "@asyn($(PORT)) Mag")
+    field(FTVL, "DOUBLE")
+    field(NELM, "3")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)MagFieldX") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) MagX")
+    field(MDEL, "0.01")
+    field(PREC, "4")
+    field(EGU,  "gauss")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)MagFieldY") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) MagY")
+    field(MDEL, "0.01")
+    field(PREC, "4")
+    field(EGU,  "gauss")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)MagFieldZ") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) MagZ")
+    field(MDEL, "0.01")
+    field(PREC, "4")
+    field(EGU,  "gauss")
+    field(SCAN, "I/O Intr")
+}

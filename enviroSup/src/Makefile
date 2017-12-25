@@ -19,6 +19,7 @@ DBD += enviro.dbd
 enviro_SRCS += drvAsynI2C.cpp
 enviro_SRCS += drvAsynTCS3472.cpp
 enviro_SRCS += drvAsynBMP280.cpp
+enviro_SRCS += drvAsynLSM303D.cpp
 
 enviro_LIBS += $(EPICS_BASE_IOC_LIBS)
 

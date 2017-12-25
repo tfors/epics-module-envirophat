@@ -1,2 +1,3 @@
 registrar("drvAsynTCS3472Register")
 registrar("drvAsynBMP280Register")
+registrar("drvAsynLSM303DRegister")

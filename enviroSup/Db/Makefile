@@ -12,6 +12,7 @@ include $(TOP)/configure/CONFIG
 # databases, templates, substitutions like this
 DB += tcs3472.db
 DB += bmp280.db
+DB += lsm303d.db
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add
