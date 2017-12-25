@@ -18,7 +18,25 @@ record(mbbo, "$(P)$(R)Gain") {
 record(ai, "$(P)$(R)Light") {
     field(DTYP, "asynFloat64")
     field(INP,  "@asyn($(PORT)) Light")
-    field(SCAN, "1 second")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)Red") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) Red")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)Green") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) Green")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)Blue") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT)) Blue")
+    field(SCAN, "I/O Intr")
 }
 
 record(waveform, "$(P)$(R)Color") {
@@ -26,5 +44,5 @@ record(waveform, "$(P)$(R)Color") {
     field(INP,  "@asyn($(PORT)) Color")
     field(FTVL, "DOUBLE")
     field(NELM, "3")
-    field(SCAN, "1 second")
+    field(SCAN, "I/O Intr")
 }

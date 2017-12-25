@@ -7,11 +7,16 @@
  * December, 2017
  */
 
+#include <epicsEvent.h>
+
 #include "drvAsynI2C.h"
 
-#define P_LightString "Light" /* asynFloat64 */
-#define P_ColorString "Color" /* asynFloat64Array */
 #define P_GainString "Gain"   /* asynInt32 */
+#define P_LightString "Light" /* asynFloat64 */
+#define P_RedString "Red"     /* asynFloat64 */
+#define P_GreenString "Green" /* asynFloat64 */
+#define P_BlueString "Blue"   /* asynFloat64 */
+#define P_ColorString "Color" /* asynFloat64Array */
 
 class drvAsynTCS3472 : public drvAsynI2C {
 
@@ -21,18 +26,23 @@ public:
     virtual asynStatus connect(asynUser* pasynUser);
     virtual asynStatus disconnect(asynUser* pasynUser);
     virtual asynStatus writeInt32(asynUser* pasynUser, epicsInt32 value);
-    virtual asynStatus readFloat64(asynUser* pasynUser, epicsFloat64* value);
-    virtual asynStatus readFloat64Array(asynUser* pasynUser,
-                                        epicsFloat64* value, size_t nElements,
-                                        size_t* nIn);
+
+    void pollTask(void);
 
 protected:
-    int P_Light;
-    int P_Color;
     int P_Gain;
+    int P_Light;
+    int P_Red;
+    int P_Green;
+    int P_Blue;
+    int P_Color;
 
 private:
+    epicsEventId eventId_;
+    double light;
+    double color[3];
     int maxCount;
+
     int read_reg(unsigned char reg, unsigned char* value, unsigned short len);
     int write_reg(unsigned char reg, unsigned char value);
 };
