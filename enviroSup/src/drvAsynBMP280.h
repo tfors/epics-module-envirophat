@@ -9,14 +9,14 @@
 
 #include <epicsEvent.h>
 
-#include "drvAsynI2C.h"
+#include "asynI2CDriver.h"
 
 #define P_TempCString "Temperature(C)"     /* asynFloat64 */
 #define P_TempFString "Temperature(F)"     /* asynFloat64 */
 #define P_PressPaString "Pressure(Pa)"     /* asynFloat64 */
 #define P_PressinHgString "Pressure(inHg)" /* asynFloat64 */
 
-class drvAsynBMP280 : public drvAsynI2C {
+class drvAsynBMP280 : public asynI2CDriver {
 
 public:
     drvAsynBMP280(const char* portName, int i2cPortNum, int i2cAddr);

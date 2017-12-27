@@ -9,7 +9,7 @@
 
 #include <epicsEvent.h>
 
-#include "drvAsynI2C.h"
+#include "asynI2CDriver.h"
 
 #define P_GainString "Gain"   /* asynInt32 */
 #define P_LightString "Light" /* asynFloat64 */
@@ -18,7 +18,7 @@
 #define P_BlueString "Blue"   /* asynFloat64 */
 #define P_ColorString "Color" /* asynFloat64Array */
 
-class drvAsynTCS3472 : public drvAsynI2C {
+class drvAsynTCS3472 : public asynI2CDriver {
 
 public:
     drvAsynTCS3472(const char* portName, int i2cPortNum, int i2cAddr);

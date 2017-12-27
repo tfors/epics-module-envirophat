@@ -9,7 +9,7 @@
 
 #include <epicsEvent.h>
 
-#include "drvAsynI2C.h"
+#include "asynI2CDriver.h"
 
 #define P_AccelXString "AccelX"       /* asynFloat64 */
 #define P_AccelYString "AccelY"       /* asynFloat64 */
@@ -20,7 +20,7 @@
 #define P_MagZString "MagZ"           /* asynFloat64 */
 #define P_MagString "Mag"             /* asynFloat64Array */
 
-class drvAsynLSM303D : public drvAsynI2C {
+class drvAsynLSM303D : public asynI2CDriver {
 
 public:
     drvAsynLSM303D(const char* portName, int i2cPortNum, int i2cAddr);

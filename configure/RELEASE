@@ -24,6 +24,7 @@
 
 # Variables and paths to dependent modules:
 MODULES = /usr/local/epics/modules
+I2C = $(MODULES)/asynI2CDriver
 ASYN = $(MODULES)/asyn
 
 # If using the sequencer, point SNCSEQ at its top directory:

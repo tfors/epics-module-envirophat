@@ -19,17 +19,17 @@ static void pollTask(void *drvPvt);
 
 drvAsynTCS3472::drvAsynTCS3472(const char* portName, int i2cPortNum,
                                int i2cAddr)
-    : drvAsynI2C(portName, i2cPortNum, i2cAddr,
-		 1, /* maxAddr */
-                    /* Interface mask */
-                 (asynInt32Mask | asynFloat64Mask | asynFloat64ArrayMask
-                  | asynDrvUserMask),
-                    /* Interrupt mask */
-		 (asynFloat64Mask | asynFloat64ArrayMask),
-                 0, /* asynFlags (does not block and is not multi-device) */
-                 1, /* Autoconnect */
-                 0, /* Default priority */
-                 0) /* Default stack size */
+    : asynI2CDriver(portName, i2cPortNum, i2cAddr,
+                    1, /* maxAddr */
+                       /* Interface mask */
+                    (asynInt32Mask | asynFloat64Mask | asynFloat64ArrayMask
+                     | asynDrvUserMask),
+                       /* Interrupt mask */
+                    (asynFloat64Mask | asynFloat64ArrayMask),
+                    0, /* asynFlags (does not block and is not multi-device) */
+                    1, /* Autoconnect */
+                    0, /* Default priority */
+                    0) /* Default stack size */
 {
     const char* functionName = "drvAsynLSM303D";
 

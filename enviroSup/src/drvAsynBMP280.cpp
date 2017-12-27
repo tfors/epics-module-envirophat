@@ -18,16 +18,16 @@ static const char* driverName = "drvAsynBMP280";
 static void pollTask(void* drvPvt);
 
 drvAsynBMP280::drvAsynBMP280(const char* portName, int i2cPortNum, int i2cAddr)
-    : drvAsynI2C(portName, i2cPortNum, i2cAddr,
-		 1, /* maxAddr */
-                    /* Interface mask */
-                 (asynFloat64Mask | asynDrvUserMask),
-                    /* Interrupt mask */
-                 (asynFloat64Mask),
-                 0, /* asynFlags (does not block and is not multi-device) */
-                 1, /* Autoconnect */
-                 0, /* Default priority */
-                 0) /* Default stack size */
+    : asynI2CDriver(portName, i2cPortNum, i2cAddr,
+                    1, /* maxAddr */
+                       /* Interface mask */
+                    (asynFloat64Mask | asynDrvUserMask),
+                       /* Interrupt mask */
+                    (asynFloat64Mask),
+                    0, /* asynFlags (does not block and is not multi-device) */
+                    1, /* Autoconnect */
+                    0, /* Default priority */
+                    0) /* Default stack size */
 {
     const char* functionName = "drvAsynBMP280";
 
