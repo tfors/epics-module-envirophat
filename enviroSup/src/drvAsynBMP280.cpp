@@ -18,7 +18,7 @@ static const char* driverName = "drvAsynBMP280";
 static void pollTask(void* drvPvt);
 
 drvAsynBMP280::drvAsynBMP280(const char* portName, int i2cPortNum, int i2cAddr)
-    : asynI2CDriver(portName, i2cPortNum, i2cAddr,
+    : asynI2CDriver(portName, i2cPortNum,
                     1, /* maxAddr */
                        /* Interface mask */
                     (asynFloat64Mask | asynDrvUserMask),
@@ -30,6 +30,8 @@ drvAsynBMP280::drvAsynBMP280(const char* portName, int i2cPortNum, int i2cAddr)
                     0) /* Default stack size */
 {
     const char* functionName = "drvAsynBMP280";
+
+    this->i2cAddr = (unsigned short)i2cAddr;
 
     createParam(P_TempCString, asynParamFloat64, &P_Temperature_C);
     createParam(P_TempFString, asynParamFloat64, &P_Temperature_F);
@@ -148,7 +150,7 @@ asynStatus drvAsynBMP280::disconnect(asynUser* pasynUser)
 int drvAsynBMP280::read_reg(unsigned char reg, unsigned char* value,
                             unsigned short len)
 {
-    return this->i2c_wr_rd(&reg, 1, value, len);
+    return this->i2c_wr_rd(i2cAddr, &reg, 1, value, len);
 }
 
 int drvAsynBMP280::write_reg(unsigned char reg, unsigned char value)
@@ -156,7 +158,7 @@ int drvAsynBMP280::write_reg(unsigned char reg, unsigned char value)
     unsigned char tx[2];
     tx[0] = reg;   /* Register address */
     tx[1] = value; /* Value */
-    return this->i2c_wr_rd(tx, 2, tx, 2);
+    return this->i2c_wr_rd(i2cAddr, tx, 2, tx, 2);
 }
 
 static void pollTask(void* drvPvt)

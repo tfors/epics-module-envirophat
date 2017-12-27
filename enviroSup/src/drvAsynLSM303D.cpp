@@ -20,7 +20,7 @@ static void pollTask(void *drvPvt);
 
 drvAsynLSM303D::drvAsynLSM303D(const char* portName, int i2cPortNum,
                                int i2cAddr)
-    : asynI2CDriver(portName, i2cPortNum, i2cAddr,
+    : asynI2CDriver(portName, i2cPortNum,
                     1, /* maxAddr */
                        /* Interface mask */
                     (asynFloat64Mask | asynFloat64ArrayMask | asynDrvUserMask),
@@ -32,6 +32,8 @@ drvAsynLSM303D::drvAsynLSM303D(const char* portName, int i2cPortNum,
                     0) /* Default stack size */
 {
     const char* functionName = "drvAsynLSM303D";
+
+    this->i2cAddr = (unsigned short)i2cAddr;
 
     createParam(P_MagXString, asynParamFloat64, &P_Mag_X);
     createParam(P_MagYString, asynParamFloat64, &P_Mag_Y);
@@ -63,7 +65,7 @@ int drvAsynLSM303D::read_reg(unsigned char reg, unsigned char* value,
     tx = 0x80;  /* Auto Increment Addressing */
     tx |= reg;  /* Register address */
 
-    return this->i2c_wr_rd(&tx, 1, value, len);
+    return this->i2c_wr_rd(i2cAddr, &tx, 1, value, len);
 }
 
 int drvAsynLSM303D::write_reg(unsigned char reg, unsigned char value)
@@ -75,7 +77,7 @@ int drvAsynLSM303D::write_reg(unsigned char reg, unsigned char value)
 
     tx[1] = value;
 
-    return this->i2c_wr_rd(tx, 2, tx, 2);
+    return this->i2c_wr_rd(i2cAddr, tx, 2, tx, 2);
 }
 
 asynStatus drvAsynLSM303D::connect(asynUser* pasynUser)

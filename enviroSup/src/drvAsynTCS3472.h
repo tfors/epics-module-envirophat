@@ -39,6 +39,8 @@ protected:
 
 private:
     epicsEventId eventId_;
+    unsigned short i2cAddr;
+
     double light;
     double color[3];
     int maxCount;

@@ -42,6 +42,8 @@ protected:
 
 private:
     epicsEventId eventId_;
+    unsigned short i2cAddr;
+
     double accel[3];
     double mag[3];
 

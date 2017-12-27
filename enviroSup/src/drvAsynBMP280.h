@@ -34,6 +34,7 @@ protected:
 
 private:
     epicsEventId eventId_;
+    unsigned short i2cAddr;
 
     /* Calibration data */
     unsigned short t1;
